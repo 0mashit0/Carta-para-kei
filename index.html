@@ -1,0 +1,401 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Una propuesta muy especial para mi 💌</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        romantic: {
+                            50: '#fff0f5',
+                            100: '#ffe4e1',
+                            200: '#fbcfe8',
+                            400: '#f472b6',
+                            500: '#ec4899',
+                            600: '#db2777',
+                            700: '#be185d',
+                        }
+                    },
+                    fontFamily: {
+                        handwriting: ['"Dancing Script"', 'cursive'],
+                        sans: ['Outfit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #fbcfe8 0%, #ffe4e1 50%, #f472b6 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Animación suave para el sobre */
+        .envelope-wrapper {
+            perspective: 1000px;
+        }
+
+        .envelope {
+            width: 280px;
+            height: 200px;
+            background-color: #f472b6;
+            position: relative;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .envelope:hover {
+            transform: translateY(-5px);
+        }
+
+        .envelope::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 140px solid transparent;
+            border-right: 140px solid transparent;
+            border-top: 110px solid #db2777;
+            transform-origin: top;
+            transition: transform 0.5s ease 0.2s, z-index 0.2s ease 0.2s;
+            z-index: 3;
+        }
+
+        .envelope.open::before {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        .envelope-pocket {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 140px solid #ec4899;
+            border-right: 140px solid #ec4899;
+            border-bottom: 100px solid #be185d;
+            border-top: 100px solid transparent;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            z-index: 2;
+        }
+
+        .letter-preview {
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+            right: 15px;
+            height: 160px;
+            background: white;
+            border-radius: 8px;
+            transition: transform 0.5s ease 0.4s;
+            z-index: 1;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .envelope.open .letter-preview {
+            transform: translateY(-80px);
+        }
+
+        /* Animaciones para flotar corazones */
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; }
+        }
+
+        .heart-particle {
+            position: fixed;
+            color: #ec4899;
+            animation: float 6s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Estilo de tarjeta de vidrio */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4 relative min-h-screen">
+
+    <div id="hearts-container"></div>
+
+    <main class="w-full max-w-lg z-10 my-8">
+
+        <!-- ================= PASO 1: SOBRE INICIAL ================= -->
+        <section id="step-1" class="flex flex-col items-center justify-center text-center transition-all duration-500">
+            <div class="mb-6 bg-white/80 backdrop-blur-md px-6 py-3 rounded-full shadow-sm">
+                <span class="text-sm md:text-base font-semibold text-pink-600 flex items-center gap-2">
+                    🇻🇪 De Venezuela ✈️ Para Argentina 🇦🇷
+                </span>
+            </div>
+
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">¡Hola, mi linda Isa! 💕</h1>
+            <p class="text-gray-600 mb-8 max-w-xs">Tienes un mensaje especial esperando a ser abierto. Haz clic en el sobre...</p>
+
+            <div class="envelope-wrapper my-4" onclick="openEnvelope()">
+                <div class="envelope" id="envelope">
+                    <div class="letter-preview flex items-center justify-center p-4 text-center">
+                        <p class="font-handwriting text-2xl text-pink-600 font-bold">Un secreto para ti... ✨</p>
+                    </div>
+                    <div class="envelope-pocket"></div>
+                </div>
+            </div>
+
+            <button onclick="openEnvelope()" class="mt-8 px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-full shadow-lg transform transition active:scale-95 flex items-center gap-2">
+                Abrir Carta 💌
+            </button>
+        </section>
+
+        <!-- ================= PASO 2: MINI TEST DIVERTIDO ================= -->
+        <section id="step-2" class="hidden glass-card rounded-3xl p-6 md:p-8 shadow-2xl text-center transition-all duration-500">
+            <div class="inline-block px-4 py-1 bg-pink-100 text-pink-600 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
+                Paso 1 de 2: Demuestra que eres tú 🧩
+            </div>
+            
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">¡alto señorita Un rápido control de seguridad! 👮‍♂️</h2>
+            <p class="text-gray-600 text-sm mb-6">Para desbloquear la carta completa, responde estas 2 preguntas sencillas:</p>
+
+            <!-- Pregunta 1 -->
+            <div id="quiz-q1" class="space-y-4">
+                <p class="font-semibold text-gray-700 text-lg">1. ¿Quién de los dos es mas penos@? 🧐</p>
+                <div class="grid grid-cols-1 gap-3">
+                    <button onclick="answerQ1(false)" class="p-3 bg-pink-50 hover:bg-pink-100 border border-pink-200 rounded-2xl font-medium text-gray-700 transition flex items-center justify-between px-5">
+                        <span>A) Obviamente yo 🫦</span>
+                        <span class="text-xs text-pink-500 hidden feedback-bad">¡Ejem! Aceptable... 😌</span>
+                    </button>
+                    <button onclick="answerQ1(true)" class="p-3 bg-pink-50 hover:bg-pink-100 border border-pink-200 rounded-2xl font-medium text-gray-700 transition flex items-center justify-between px-5">
+                        <span>B) Tú, sin ninguna duda 👑</span>
+                        <span class="text-xs text-green-600 hidden feedback-good">¡Respuesta correcta! ✨</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pregunta 2 -->
+            <div id="quiz-q2" class="hidden space-y-4">
+                <p class="font-semibold text-gray-700 text-lg">2. ¿Supongamos qué es lo PRIMERO que haremos apenas nos veamos en el aeropuerto? ✈️🇦🇷</p>
+                <div class="grid grid-cols-1 gap-3">
+                    <button onclick="answerQ2()" class="p-3 bg-pink-50 hover:bg-pink-100 border border-pink-200 rounded-2xl font-medium text-gray-700 transition">
+                        A) Un abrazo eterno que compense todos estos meses 🤗
+                    </button>
+                    <button onclick="answerQ2()" class="p-3 bg-pink-50 hover:bg-pink-100 border border-pink-200 rounded-2xl font-medium text-gray-700 transition">
+                        B) Darme un beso enorme y no soltarme jamás 💋
+                    </button>
+                    <button onclick="answerQ2()" class="p-3 bg-pink-50 hover:bg-pink-100 border border-pink-200 rounded-2xl font-medium text-gray-700 transition">
+                        C) Ir volando por unos alfajores y un buen mate 🧉
+                    </button>
+                    <button onclick="answerQ2()" class="p-3 bg-pink-50 hover:bg-pink-600 hover:text-white border border-pink-300 rounded-2xl font-bold text-pink-600 transition">
+                        D) ¡Todas las anteriores juntas! 🔥
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PASO 3: LA CARTA SINCERA ================= -->
+        <section id="step-3" class="hidden glass-card rounded-3xl p-6 md:p-8 shadow-2xl transition-all duration-500">
+            <div class="text-center mb-6">
+                <span class="text-xs font-bold uppercase tracking-widest text-pink-500 bg-pink-100 px-3 py-1 rounded-full">
+                    Carta desbloqueada 🔓
+                </span>
+                <h2 class="font-handwriting text-4xl font-bold text-pink-600 mt-3">Para ti mi tierna</h2>
+            </div>
+
+            <div class="prose text-gray-700 text-base leading-relaxed space-y-4 max-h-72 overflow-y-auto pr-2 custom-scrollbar">
+                <p>
+                    Sabes, a veces me detengo a pensar en los más de 4.000 kilómetros que hay entre Venezuela o peru y Argentina. Parece una locura, una distancia enorme en el mapa... pero cuando hablo contigo, siento que estás justo aquí, al lado mío.
+                </p>
+                <p>
+                    No hay un solo día en el que no me saque una sonrisa un mensaje tuyo o una de nuestras conversaciones hasta tarde. Te has convertido en mi persona favorita, en mi refugio (cabañita) y en la razón por la que cuento los días en el calendario.
+                </p>
+                <p>
+                    Sé que la distancia exige paciencia, pero cada segundo de espera vale totalmente la pena por ti. Saber que muy pronto tomaré ese avión, que aterrizaré allá y que por fin podré mirarte a los ojos, abrazarte fuerte y escucharte reír en persona... es el sueño más bonito que tengo ahora mismo.
+                </p>
+                <p class="font-semibold text-pink-600">
+                    Mis sentimientos por ti son verdaderos, reales y crecen cada día más. No quiero guardarme nada.
+                </p>
+            </div>
+
+            <div class="mt-8 text-center">
+                <button onclick="goToProposal()" class="w-full py-4 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold rounded-2xl shadow-lg transform transition active:scale-95 text-lg flex items-center justify-center gap-2">
+                    <span>Hay algo importante que quiero preguntarte otra ves...</span>
+                    <span>✨</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- ================= PASO 4: LA GRAN PREGUNTA ================= -->
+        <section id="step-4" class="hidden glass-card rounded-3xl p-6 md:p-8 shadow-2xl text-center relative transition-all duration-500 overflow-hidden">
+            <div class="animate-bounce inline-block mb-3 text-5xl">💍</div>
+            <h2 class="font-handwriting text-4xl md:text-5xl font-bold text-pink-600 mb-4">¿Quieres ser mi novia? 💕</h2>
+            <p class="text-gray-600 text-sm md:text-base mb-8">
+                Prometo hacerte sonreír todos los días, cuidarte, respetarte y aprovechar cada segundo juntos cuando esté a tu lado en dónde estemos✨
+            </p>
+
+            <!-- Contenedor de botones (Posicionamiento relativo para la huida del "No") -->
+            <div class="relative min-h-[160px] flex items-center justify-center gap-4 flex-wrap" id="buttons-container">
+                <button id="btn-yes" onclick="acceptProposal()" class="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xl rounded-2xl shadow-xl transform transition hover:scale-110 active:scale-95 z-20 flex items-center gap-2">
+                    <span>¡SÍ, ACEPTO! 💖</span>
+                </button>
+
+                <button id="btn-no" onmouseover="moveNoButton()" onclick="moveNoButton()" class="px-6 py-3 bg-gray-300 text-gray-700 font-semibold text-base rounded-2xl shadow transition-all duration-200 z-10 absolute md:static">
+                    No 😜
+                </button>
+            </div>
+            <p id="no-hint" class="text-xs text-gray-400 mt-4 italic opacity-0 transition-opacity">¡El botón "No" parece un poco tímido no? 😉</p>
+        </section>
+
+        <!-- ================= CELEBRACIÓN FINAL ================= -->
+        <section id="step-final" class="hidden glass-card rounded-3xl p-8 shadow-2xl text-center transition-all duration-500">
+            <div class="text-6xl mb-4 animate-pulse">🎉🥳🥂</div>
+            <h2 class="font-handwriting text-5xl font-bold text-pink-600 mb-2">¡DIJO QUE SÍ! 💕</h2>
+            <p class="text-xl font-bold text-gray-800 mb-4">¡Eres la persona más maravillosa del mundo!</p>
+            
+            <div class="bg-pink-50 p-4 rounded-2xl border border-pink-200 mb-6 text-gray-700 text-sm space-y-2">
+                <p class="font-semibold text-pink-700">Próxima Parada: ¡Nuestro Reencuentro! ✈️</p>
+                <p>Guarda esta fecha en tu corazón. Pronto estaremos más cerca que nunca 🇻🇪 ❤️ 🇦🇷</p>
+            </div>
+
+            <div class="p-4 bg-white/60 rounded-xl">
+                <p class="text-xs text-gray-500">Prepara las maletas y muchos abrazos... ¡Nos vemos cuando menos lo esperes! 🧳 A partir de hoy, empieza nuestra mejor historia. 🥰</p>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        /* === Generar Corazones Flotantes de Fondo === */
+        function createHeart() {
+            const container = document.getElementById('hearts-container');
+            const heart = document.createElement('div');
+            heart.classList.add('heart-particle');
+            heart.innerHTML = ['💖', '🌸', '✨', '💕', '🥰'][Math.floor(Math.random() * 5)];
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = Math.random() * 3 + 4 + 's';
+            heart.style.fontSize = Math.random() * 15 + 15 + 'px';
+            container.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, 6000);
+        }
+        setInterval(createHeart, 400);
+
+        /* === Transiciones entre Pasos === */
+        function openEnvelope() {
+            const envelope = document.getElementById('envelope');
+            envelope.classList.add('open');
+            
+            setTimeout(() => {
+                document.getElementById('step-1').classList.add('hidden');
+                document.getElementById('step-2').classList.remove('hidden');
+            }, 1200);
+        }
+
+        /* === Lógica del Quiz === */
+        function answerQ1(isCorrect) {
+            document.getElementById('quiz-q1').classList.add('hidden');
+            document.getElementById('quiz-q2').classList.remove('hidden');
+        }
+
+        function answerQ2() {
+            document.getElementById('step-2').classList.add('hidden');
+            document.getElementById('step-3').classList.remove('hidden');
+        }
+
+        function goToProposal() {
+            document.getElementById('step-3').classList.add('hidden');
+            document.getElementById('step-4').classList.remove('hidden');
+        }
+
+        /* === Botón Travieso "NO" === */
+        let noCount = 0;
+        function moveNoButton() {
+            const btnNo = document.getElementById('btn-no');
+            const container = document.getElementById('buttons-container');
+            const hint = document.getElementById('no-hint');
+
+            // Habilitar posicionado absoluto tras la primera interacción
+            btnNo.style.position = 'absolute';
+
+            const containerRect = container.getBoundingClientRect();
+            const btnRect = btnNo.getBoundingClientRect();
+
+            // Calcular límites para que no salga del contenedor
+            const maxX = containerRect.width - btnRect.width;
+            const maxY = containerRect.height - btnRect.height;
+
+            const randomX = Math.floor(Math.random() * Math.max(0, maxX));
+            const randomY = Math.floor(Math.random() * Math.max(0, maxY));
+
+            btnNo.style.left = `${randomX}px`;
+            btnNo.style.top = `${randomY}px`;
+
+            noCount++;
+            if (noCount >= 2) {
+                hint.classList.remove('opacity-0');
+            }
+            if (noCount >= 5) {
+                btnNo.innerText = '¡Imposible hacer clic! 🤪';
+            }
+        }
+
+        /* === Celebración y Confetti === */
+        function acceptProposal() {
+            document.getElementById('step-4').classList.add('hidden');
+            document.getElementById('step-final').classList.remove('hidden');
+
+            // Disparar efecto Confetti masivo
+            const duration = 5 * 1000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1000 };
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            const interval = setInterval(function() {
+                const timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                const particleCount = 50 * (timeLeft / duration);
+                
+                // Lanzar confeti desde dos lados de la pantalla
+                confetti(Object.assign({}, defaults, { 
+                    particleCount, 
+                    origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+                    colors: ['#ec4899', '#f472b6', '#34d399', '#fbbf24', '#a78bfa']
+                }));
+                confetti(Object.assign({}, defaults, { 
+                    particleCount, 
+                    origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+                    colors: ['#ec4899', '#f472b6', '#34d399', '#fbbf24', '#a78bfa']
+                }));
+            }, 250);
+        }
+    </script>
+</body>
+</html>
+```
